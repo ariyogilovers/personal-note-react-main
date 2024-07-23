@@ -1,6 +1,7 @@
 import React from 'react'
 import { showFormattedDate } from '../utils';
 
+// ini const NoteItemBody nya
 const NoteItemBody = ({title, body, createdAt}) => {
   return (
     <div className='note-item__content'>

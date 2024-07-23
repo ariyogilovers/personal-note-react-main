@@ -5,21 +5,24 @@ import NotesList from "./NotesList";
 import NoteArchivedList from "./NoteArchivedList";
 import { getInitialData, showFormattedDate } from "../utils/index.js";
 
+// ini class NotesApp
 class NotesApp extends React.Component {
+
+    // ini constructor
     constructor(props) {
         super(props);
-
         this.state = {
             notes: getInitialData(),
             archiveNotes: []
         }
-
         this.onDeleteHandler = this.onDeleteHandler.bind(this);
         this.onArchiveHandler = this.onArchiveHandler.bind(this);
         this.onAddNotesHandler = this.onAddNotesHandler.bind(this);
         this.onMoveHandler = this.onMoveHandler.bind(this);
     }
 
+
+    // ini onDeleteHandler by id
     onDeleteHandler(id) {
         const notes = this.state.notes.filter((note) => note.id !== id);
         this.setState({ notes });
@@ -30,6 +33,7 @@ class NotesApp extends React.Component {
           this.setState({ archiveNotes: updatedArchivedNotes });
     }
 
+    // ini onArchiveHandler by id
     onArchiveHandler(id) {
         this.setState((prevState) => {
             const updatedNotes = prevState.notes.filter((note) => note.id !== id);
@@ -43,6 +47,7 @@ class NotesApp extends React.Component {
         });
     }
 
+    // ini onMoveHandler by id
     onMoveHandler(id) {
         this.setState((prevState) => {
             const updatedNotes = prevState.notes.map((note) => {
@@ -64,6 +69,7 @@ class NotesApp extends React.Component {
         });
     }
 
+    // ini onAddNotesHandler by title, body
     onAddNotesHandler({title, body}) {
         this.setState((prevState) => {
             return {

@@ -1,6 +1,7 @@
 import React from 'react'
 import NoteItem from './NoteItem'
 
+// ini const NotesList nya
 const NotesList = ({notes, onDelete, onArchive }) => {
 
   return (
