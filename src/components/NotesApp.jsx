@@ -5,10 +5,9 @@ import NotesList from "./NotesList";
 import NoteArchivedList from "./NoteArchivedList";
 import { getInitialData, showFormattedDate } from "../utils/index.js";
 
-// ini class NotesApp
+// Class NotesApp
 class NotesApp extends React.Component {
-
-    // ini constructor
+    // Constructor
     constructor(props) {
         super(props);
         this.state = {
@@ -21,65 +20,55 @@ class NotesApp extends React.Component {
         this.onMoveHandler = this.onMoveHandler.bind(this);
     }
 
-
-    // ini onDeleteHandler by id
+    // onDeleteHandler by id
     onDeleteHandler(id) {
         const notes = this.state.notes.filter((note) => note.id !== id);
-        this.setState({ notes });
-
-        const updatedArchivedNotes = this.state.archiveNotes.filter(
-            (note) => note.id !== id
-          );
-          this.setState({ archiveNotes: updatedArchivedNotes });
+        const updatedArchivedNotes = this.state.archiveNotes.filter((note) => note.id !== id);
+        this.setState({ notes, archiveNotes: updatedArchivedNotes });
     }
 
-    // ini onArchiveHandler by id
+    // onArchiveHandler by id
     onArchiveHandler(id) {
         this.setState((prevState) => {
             const updatedNotes = prevState.notes.filter((note) => note.id !== id);
             const archivedNote = prevState.notes.find((note) => note.id === id);
-            const updatedArchivedNotes = [...prevState.archiveNotes, archivedNote]; 
-        
+            if (!archivedNote) return null;
+            const updatedArchivedNotes = [...prevState.archiveNotes, archivedNote];
             return {
                 notes: updatedNotes,
-                archiveNotes: updatedArchivedNotes 
+                archiveNotes: updatedArchivedNotes
             };
         });
     }
 
-    // ini onMoveHandler by id
+    // onMoveHandler by id
     onMoveHandler(id) {
         this.setState((prevState) => {
-            const updatedNotes = prevState.notes.map((note) => {
-                if (note.id === id) {
-                    return {
-                        ...note,
-                        archived: true,
-                    };
-                }
-                return note;
-            });
-    
             const movedNote = prevState.notes.find((note) => note.id === id);
-    
+            if (!movedNote) return null;
+            const updatedNotes = prevState.notes.filter((note) => note.id !== id);
+            const updatedArchivedNotes = [...prevState.archiveNotes, movedNote];
             return {
                 notes: updatedNotes,
-                archiveNotes: [...prevState.archiveNotes, movedNote],
+                archiveNotes: updatedArchivedNotes
             };
         });
     }
 
-    // ini onAddNotesHandler by title, body
-    onAddNotesHandler({title, body}) {
+    // onAddNotesHandler by title, body
+    onAddNotesHandler({ title, body }) {
+        const currentTimestamp = +new Date();
+        const formattedDate = showFormattedDate(currentTimestamp);
+
         this.setState((prevState) => {
             return {
                 notes: [
                     ...prevState.notes,
                     {
-                        id: +new Date(),
+                        id: currentTimestamp,
                         title: title,
                         body: body,
-                        createdAt: +new Date(),
+                        createdAt: formattedDate,
                         archived: false,
                     }
                 ]
@@ -90,17 +79,25 @@ class NotesApp extends React.Component {
     render() {
         return (
             <>
-            <NoteHeader />
-            <div className='note-app__body'>
-            <div className='note-input'>
-            <h2>Buat catatan</h2>
-            <NoteInput addNotes={this.onAddNotesHandler} />
-            </div>
-            <h2>Catatan Aktif</h2>
-            <NotesList notes={this.state.notes} onDelete={this.onDeleteHandler} onArchive={this.onArchiveHandler}/>
-            <h2>Arsip</h2>
-            <NoteArchivedList archivedNotes={this.state.archiveNotes} onDelete={this.onDeleteHandler} onMove={this.onMoveHandler} />
-            </div>
+                <NoteHeader />
+                <div className='note-app__body'>
+                    <div className='note-input'>
+                        <h2>Buat catatan</h2>
+                        <NoteInput addNotes={this.onAddNotesHandler} />
+                    </div>
+                    <h2>Catatan Aktif</h2>
+                    {this.state.notes.length > 0 ? (
+                        <NotesList notes={this.state.notes} onDelete={this.onDeleteHandler} onArchive={this.onArchiveHandler} />
+                    ) : (
+                        <p>Tidak ada catatan</p>
+                    )}
+                    <h2>Arsip</h2>
+                    {this.state.archiveNotes.length > 0 ? (
+                        <NoteArchivedList archivedNotes={this.state.archiveNotes} onDelete={this.onDeleteHandler} onMove={this.onMoveHandler} />
+                    ) : (
+                        <p>Tidak ada arsip</p>
+                    )}
+                </div>
             </>
         )
     }
